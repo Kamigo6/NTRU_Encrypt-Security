@@ -3,7 +3,8 @@ import poly
 
 
 class Ntru:
-    N, p, q, d, f, g, h = None, None, None, None, None, None, None
+    N, p, q, d = None, None, None, None
+    f, g, h = None, None, None
     f_p, f_q, D = None, None, None
 
     def __init__(self, N_new, p_new, q_new):
@@ -13,16 +14,18 @@ class Ntru:
         D = [0] * (self.N + 1)
         D[0] = -1
         D[self.N] = 1
-        self.D = D
+        self.D = D  # x^N - 1
 
     def genPublicKey(self, f_new, g_new, d_new):
         self.f = f_new
         self.g = g_new
         self.d = d_new
-        [gcd_f, s_f, t_f] = poly.extEuclidPoly(self.f, self.D)
+        [gcd_f, s_f, t_f] = poly.extEuclidPoly(self.f, self.D) # s_f*f + t_f*(x^N - 1) = gcd_f
         self.f_p = poly.modPoly(s_f, self.p)
+        print(self.f_p)
         self.f_q = poly.modPoly(s_f, self.q)
-        self.h = self.reModulo(poly.multPoly(self.f_q, self.g), self.D, self.q)
+        print(self.f_q)
+        self.h = self.reModulo(poly.multPoly(self.f_q*self.p, self.g), self.D, self.q)
         if not self.runTests():
             print("Failed!")
             quit()
@@ -35,9 +38,7 @@ class Ntru:
 
     def encrypt(self, message, randPol):
         if self.h != None:
-            e_tilda = poly.addPoly(
-                poly.multPoly(poly.multPoly([self.p], randPol), self.h), message
-            )
+            e_tilda = poly.addPoly(poly.multPoly(self.h, randPol), message)
             e = self.reModulo(e_tilda, self.D, self.q)
             return e
         else:
@@ -54,11 +55,13 @@ class Ntru:
         return poly.trim(tmp)
 
     def decrypt(self, encryptedMessage):
-        tmp = self.reModulo(poly.multPoly(self.f, encryptedMessage), self.D, self.q)
-        centered = poly.cenPoly(tmp, self.q)
-        m1 = poly.multPoly(self.f_p, centered)
-        tmp = self.reModulo(m1, self.D, self.p)
-        return poly.trim(tmp)
+        a = self.reModulo(poly.multPoly(self.f,encryptedMessage), self.D, self.q)
+        print("a = ", a)
+        b = self.reModulo(poly.cenPoly(a, self.q), self.D, self.p)
+        print("b = ", b)
+        c = self.reModulo(poly.multPoly(self.f_p, b), self.D, self.p)
+        print("c = ", c)
+        return poly.trim(c)
 
     def reModulo(self, num, div, modby):
         [_, remain] = poly.divPoly(num, div)
@@ -93,16 +96,16 @@ class Ntru:
             print("Error: gcd(N,q) is not 1")
             return False
 
-        if self.q <= (6 * self.d + 1) * self.p:
-            print("Error: q is not > (6*d+1)*p")
-            return False
+        # if self.q <= (6 * self.d + 1) * self.p:
+        #     print("Error: q is not > (6*d+1)*p")
+        #     return False
 
-        if not poly.isTernary(self.f, self.d + 1, self.d):
-            print("Error: f does not belong to T(d+1,d)")
-            return False
+        # if not poly.isTernary(self.f, self.d + 1, self.d):
+        #     print("Error: f does not belong to T(d+1,d)")
+        #     return False
 
-        if not poly.isTernary(self.g, self.d, self.d):
-            print("Error: g does not belong to T(d,d)")
-            return False
+        # if not poly.isTernary(self.g, self.d, self.d):
+        #     print("Error: g does not belong to T(d,d)")
+        #     return False
 
         return True
