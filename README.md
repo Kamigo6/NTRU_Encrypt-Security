@@ -10,6 +10,7 @@ The folder "Simplify" contains the code for NTRUEncrypt
 - `ntru.py`: Contains definition of Ntru class object
 - `poly.py`: This library allows the user do mathematical operations on rational coefficient polynomials.
 - `demo.ipynb`: This code implements the NTRUEncrypt example from Wikipedia: [NTRUEncrypt Wikipedia](https://en.wikipedia.org/wiki/NTRUEncrypt)
+<br>
 The folder "Presentation and Report" contains the report and presetation
 
 ## Member
