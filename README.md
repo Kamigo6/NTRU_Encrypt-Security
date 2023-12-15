@@ -14,6 +14,6 @@ The folder "Simplify" contains the code for NTRUEncrypt
 The folder "Presentation and Report" contains the report and presetation
 
 ## Member
-Ngo Quang Minh 20205163
-Pham Khanh Linh 20205186
-Nguyen Minh Huyen 20206652
+<br> Ngo Quang Minh 20205163
+<br> Pham Khanh Linh 20205186
+<br> Nguyen Minh Huyen 20206652
