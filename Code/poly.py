@@ -1,16 +1,7 @@
 # Polynomial Module
-from operator import add
-from operator import neg
-from operator import mod
 from fractions import Fraction as frac
-from numpy.polynomial import polynomial as P
 
-# Resize Adds Leading Zeros to the polynomial vectors
-
-# Helper Functions
 # Extended Euclidean Algo for Integers
-
-
 def egcd(a, b):
     x, y, u, v = 0, 1, 1, 0
     while a != 0:
@@ -22,7 +13,6 @@ def egcd(a, b):
 
 
 # Modular inverse
-# An application of extended GCD algorithm to finding modular inverses:
 def modinv(a, m):
     gcdVal, x, y = egcd(a, m)
     if gcdVal != 1:
@@ -41,7 +31,7 @@ def fracMod(f, m):
         out = modinv(f.denominator, m) * f.numerator % m
         return out
 
-
+# Resize polynomial vectors
 def resize(c1, c2):
     if len(c1) > len(c2):
         c2 = c2 + [0] * (len(c1) - len(c2))
@@ -50,7 +40,7 @@ def resize(c1, c2):
     return [c1, c2]
 
 
-# Removes Leading Zeros
+# Removes last Zeros
 def trim(seq):
     if len(seq) == 0:
         return seq
@@ -64,15 +54,14 @@ def trim(seq):
 # Subtracts two Polnomials
 def subPoly(c1, c2):
     [c1, c2] = resize(c1, c2)
-    c2 = list(map(neg, c2))
-    out = list(map(add, c1, c2))
+    out = [x - y for x, y in zip(c1, c2)]
     return trim(out)
 
 
 # Adds two Polynomials
 def addPoly(c1, c2):
     [c1, c2] = resize(c1, c2)
-    out = list(map(add, c1, c2))
+    out = [x + y for x, y in zip(c1, c2)]
     return trim(out)
 
 
@@ -117,10 +106,9 @@ def modPoly(c, k):
 # Centerlift of Polynomial with respect to q
 def cenPoly(c, q):
     u = float(q) / float(2)
-    l = -u
     c = modPoly(c, q)
-    c = list(map(lambda x: mod(x, -q) if x > u else x, c))
-    c = list(map(lambda x: mod(x, q) if x <= l else x, c))
+    c = list(map(lambda x: x - q if x > u else x, c))
+    c = list(map(lambda x: x + q if x <= -u else x, c))
     return c
 
 
@@ -151,7 +139,7 @@ def extEuclidPoly(a, b):
     gcdVal = R[-2]
     s_out = S[-2]
     t_out = T[-2]
-    ### ADDITIONAL STEPS TO SCALE GCD SUCH THAT LEADING TERM AS COEF OF 1:
+    # Additional steps to scale gcd such that leading term as coeffient of 1
     scaleFactor = gcdVal[len(gcdVal) - 1]
     gcdVal = list(map(lambda x: x / scaleFactor, gcdVal))
     s_out = list(map(lambda x: x / scaleFactor, s_out))
@@ -160,17 +148,3 @@ def extEuclidPoly(a, b):
         return [gcdVal, t_out, s_out]
     else:
         return [gcdVal, s_out, t_out]
-
-
-def isTernary(f, alpha, beta):
-    ones = 0
-    negones = 0
-    for i in range(0, len(f)):
-        if f[i] == 1:
-            ones = ones + 1
-        if f[i] == -1:
-            negones = negones + 1
-    if (negones + ones) <= len(f) and alpha == ones and beta == negones:
-        return True
-    else:
-        return False

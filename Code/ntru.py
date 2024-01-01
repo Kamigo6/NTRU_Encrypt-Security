@@ -1,4 +1,3 @@
-import math
 import poly
 
 
@@ -19,7 +18,10 @@ class Ntru:
     def genPublicKey(self, f_new, g_new):
         self.f = f_new
         self.g = g_new
-        [gcd_f, s_f, t_f] = poly.extEuclidPoly(self.f, self.D) # s_f*f + t_f*(x^N - 1) = gcd_f
+        # s_f*f + t_f*(x^N - 1) = gcd_f = 1 
+        # => s_f*f = 1 in ring Z[x]/x^N - 1
+        [gcd_f, s_f, t_f] = poly.extEuclidPoly(self.f, self.D) 
+        
         self.f_p = poly.modPoly(s_f, self.p)
         print("Inverse of f modulo p: ", self.f_p)
         self.f_q = poly.modPoly(s_f, self.q)
@@ -58,4 +60,5 @@ class Ntru:
         return poly.modPoly(remain, modby)
 
     def runTests(self):
+        # Condition
         return True
